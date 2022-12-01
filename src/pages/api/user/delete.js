@@ -1,4 +1,4 @@
-import { deleteUser, findUser } from "../../../prisma/user";
+import { deleteUser, findUser } from "../../../../prisma/user";
 
 export default async function (req, res) {
   const { id } = req.query;

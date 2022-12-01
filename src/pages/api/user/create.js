@@ -1,4 +1,4 @@
-import { createUser, findUserByName } from "../../../prisma/user";
+import { createUser, findUserByName } from "../../../../prisma/user";
 import bcrypt from "bcrypt";
 
 export default async function (req, res) {

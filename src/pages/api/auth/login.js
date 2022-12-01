@@ -1,6 +1,7 @@
 import { compareSync } from "bcrypt";
 import jwt from "jsonwebtoken";
-import { findUserForLoginByName } from "../../../prisma/user";
+import { serialize } from "cookie";
+import { findUserForLoginByName } from "../../../../prisma/user";
 
 export default async function (req, res) {
   const { name, password } = req.body;
@@ -30,11 +31,23 @@ export default async function (req, res) {
         delete user.password;
 
         // create token
-        const token = jwt.sign({ user }, process.env.JWT_SECRET);
+        const token = jwt.sign(
+          { user, exp: Math.floor(Date.now() / 1000) * 60 * 60 * 24 * 1 }, // 1 day
+          process.env.JWT_SECRET
+        );
+
+        const serialized = serialize("token", token, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV !== "development",
+          sameSite: "strict",
+          maxAge: 60 * 60 * 24 * 1, // 1 day
+          path: "/",
+        });
+
+        res.setHeader("Set-Cookie", serialized);
 
         return res.status(200).json({
           msg: "success login",
-          token,
         });
       } catch (err) {
         return res.status(404).json({

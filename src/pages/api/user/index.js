@@ -1,4 +1,4 @@
-import { findAllUser } from "../../../prisma/user";
+import { findAllUser } from "../../../../prisma/user";
 
 export default async function (req, res) {
   switch (req.method) {
