@@ -37,7 +37,7 @@ export default async function (req, res) {
         );
 
         const serialized = serialize("token", token, {
-          httpOnly: true,
+          httpOnly: false,
           secure: process.env.NODE_ENV !== "development",
           sameSite: "strict",
           maxAge: 60 * 60 * 24 * 1, // 1 day

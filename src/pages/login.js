@@ -1,25 +1,16 @@
 import Head from "next/head";
-import cookie from "cookie";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
 import { ButtonAuth, Input } from "../components";
+import { useAuth } from "../contexts/AuthContext";
 import { Login } from "../services";
-import router from "next/router";
-
-export async function getServerSideProps(ctx) {
-  const cookies = cookie.parse(ctx.req.headers.cookie || "");
-  if (cookies.token) {
-    return {
-      redirect: {
-        destination: "/",
-        permanent: true,
-      },
-    };
-  }
-  return {
-    props: {},
-  };
-}
 
 const login = () => {
+  const { currentUser } = useAuth();
+
+  const { reload, replace } = useRouter();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -30,11 +21,15 @@ const login = () => {
 
     const res = await Login(data);
     if (res.status === 200) {
-      router.reload();
+      reload();
     } else {
       alert(`Message : ${res.response.data.msg}`);
     }
   };
+
+  useEffect(() => {
+    currentUser && replace("/dashboard");
+  }, []);
 
   return (
     <>
@@ -46,9 +41,7 @@ const login = () => {
 
       <div className={`bg-gray-50`}>
         <div className={`mx-auto max-w-md`}>
-          <div
-            className={`flex h-screen flex-col items-center justify-center p-4`}
-          >
+          <div className={`flex h-screen flex-col justify-center p-4`}>
             <form
               onSubmit={handleSubmit}
               className={`w-full space-y-8 rounded-md border border-gray-100 bg-white px-4 py-14`}
@@ -62,6 +55,12 @@ const login = () => {
               </div>
               <ButtonAuth>Submit</ButtonAuth>
             </form>
+            <Link
+              href={`/register`}
+              className={`m-4 w-fit text-lg text-blue-500 transition-all hover:underline`}
+            >
+              Create Account
+            </Link>
           </div>
         </div>
       </div>
