@@ -13,9 +13,9 @@ const Dasboard = () => {
       </Head>
       <div className={`bg-gray-50`}>
         <div
-          className={`flex h-screen flex-col items-center justify-center space-y-8`}
+          className={`flex h-screen flex-col items-center justify-center space-y-8 px-4`}
         >
-          <h1 className={`text-3xl text-gray-900`}>
+          <h1 className={`text-center text-3xl text-gray-900`}>
             Welcome{" "}
             <span className={`font-bold capitalize`}>{currentUser?.name}</span>
             <span className={`text-xl capitalize`}>

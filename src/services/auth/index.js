@@ -1,1 +1,2 @@
-export { default as Login } from "./Login";
+export { default as AuthRegister } from "./AuthRegister";
+export { default as AuthLogin } from "./AuthLogin";

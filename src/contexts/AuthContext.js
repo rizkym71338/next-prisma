@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useContext, useRef } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { getCookie, deleteCookie } from "cookies-next";
 import decode from "jwt-decode";
 import { useRouter } from "next/router";
+import { AuthLogin, AuthRegister } from "../services";
 
 const AuthContext = React.createContext();
 
@@ -15,13 +16,24 @@ export const AuthProvider = ({ children }) => {
 
   const { replace, pathname } = useRouter();
 
-  // const Register = () => {
-  //   return;
-  // };
+  const register = async ({ username, password }) => {
+    const res = await AuthRegister({ username, password });
+    if (res.status === 200) {
+      await login({ username, password });
+    } else {
+      alert(`Message : ${res.response.data.msg}`);
+    }
+  };
 
-  // const Login = ({ username, password }) => {
-  //   return;
-  // };
+  const login = async ({ username, password }) => {
+    const res = await AuthLogin({ username, password });
+    if (res.status === 200) {
+      getUserInfo();
+      replace("dashboard");
+    } else {
+      alert(`Message : ${res.response.data.msg}`);
+    }
+  };
 
   const logout = () => {
     deleteCookie("token");
@@ -29,23 +41,26 @@ export const AuthProvider = ({ children }) => {
     replace("/login");
   };
 
+  const getUserInfo = () => {
+    const token = getCookie("token");
+    if (token) {
+      const { user } = decode(token);
+      setCurrentUser(user);
+    } else {
+      pathname !== "/register" && replace("/login");
+    }
+  };
   useEffect(() => {
-    const getUserInfo = () => {
-      const token = getCookie("token");
-      if (token) {
-        const { user } = decode(token);
-        setCurrentUser(user);
-      } else {
-        pathname !== "/register" && replace("/login");
-      }
-      setLoading(false);
-    };
+    getUserInfo();
+    setLoading(false);
     return getUserInfo;
   }, []);
 
   const value = {
     currentUser,
     setCurrentUser,
+    register,
+    login,
     logout,
   };
 

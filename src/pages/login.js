@@ -1,30 +1,22 @@
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { ButtonAuth, Input } from "../components";
 import { useAuth } from "../contexts/AuthContext";
-import { Login } from "../services";
 
-const login = () => {
-  const { currentUser } = useAuth();
-
-  const { reload, replace } = useRouter();
+const Login = () => {
+  const [loading, setLoading] = useState(false);
+  const { currentUser, login } = useAuth();
+  const { replace } = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    setLoading(true);
     const username = e.target[0].value;
     const password = e.target[1].value;
-
-    const data = { username, password };
-
-    const res = await Login(data);
-    if (res.status === 200) {
-      reload();
-    } else {
-      alert(`Message : ${res.response.data.msg}`);
-    }
+    await login({ username, password });
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -53,7 +45,12 @@ const login = () => {
                 <Input type={`text`} placeholder={`Username`} required />
                 <Input type={`password`} placeholder={`Password`} required />
               </div>
-              <ButtonAuth>Submit</ButtonAuth>
+              <ButtonAuth
+                disabled={loading}
+                className={`${loading && "cursor-not-allowed"}`}
+              >
+                {loading ? "Loading ..." : "Submit"}
+              </ButtonAuth>
             </form>
             <Link
               href={`/register`}
@@ -68,4 +65,4 @@ const login = () => {
   );
 };
 
-export default login;
+export default Login;
